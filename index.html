@@ -21,16 +21,21 @@
     <div id="cheshire-cat-chat-widget" x-data="$store.store">
 
         <div id="ccat-history" x-ref="history">
+            
+            <a id="ccat-credits" target="_blank" href="https://cheshirecat.ai">
+                <img src="poweredby.png">
+            </a>
+            
             <template x-for="msg in messages">
                 <div class="ccat-message" x-text="msg"></div>
-            </template>    
+            </template>
+
         </div>
 
         <div id="ccat-toolbar">
             <textarea id="ccat-query" x-model="query" @keyup.enter="send()"></textarea>
             <button id="ccat-send-button" @click="send()">Send</button>
         </div>
-
     </div>
 
 </body>
