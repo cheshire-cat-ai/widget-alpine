@@ -1,16 +1,17 @@
-//import { CatClient } from 'ccat-api'
 
+import CatClient from 'https://cdn.jsdelivr.net/npm/ccat-api@0.10.6/+esm'
 
 let ccat
-let thinkingMessage = "Thinking..."
-let firstMessage = "How can I help you? \n\nPlease remember I'm an AI, so I may be wrong. Be sure to verify my responses."
+
+const thinkingMessage = "Thinking..."
+const firstMessage = "How can I help you? \n\nPlease remember I'm an AI, so I may be wrong. Be sure to verify my responses."
 
 document.addEventListener('alpine:init', function () {
     initCat()
     initAlpineStore()
 })
 
-function initAlpineStore() {
+const initAlpineStore = () => {
 
     Alpine.store("store", {
         waitingFirstToken: false,
@@ -19,10 +20,9 @@ function initAlpineStore() {
         messages: [firstMessage],//"stocazzoooooooooooooooooooooooooo".split(""),
 
         send: function () {
-            // TODO: we stringify because it is the raw websocket client
-            ccat.send(JSON.stringify({
-                "text": this.query
-            }))
+            ccat.send(this.query, {
+                "custom": "more data"
+            })
 
             this.messages.push(this.query)
             this.messages.push(thinkingMessage)
@@ -30,7 +30,7 @@ function initAlpineStore() {
             this.waitingLastToken = true
             this.query = ""
             
-            historyEl = this.$refs.history
+            let historyEl = this.$refs.history
             setTimeout(function(){
                 scrollDown(historyEl)
             })
@@ -39,42 +39,42 @@ function initAlpineStore() {
 }
 
 function initCat() {
+    
+    ccat = new CatClient({
+        baseUrl: 'localhost',
+        userId: 'peepino'
+    })
 
-    ccat = new WebSocket("ws://localhost:1865/ws/piero") // TODO: proper user
-
-    ccat.onmessage = function (ws_message) {
-
-        // TODO: manual parsing because it is the raw websocket client
-        mex = JSON.parse(ws_message.data)
-
-        store = Alpine.store("store")
-        nMessages = store.messages.length
+    ccat.onMessage((msg) => {
+        console.log(msg)
+        let store = Alpine.store("store")
+        let nMessages = store.messages.length
         
-        if(mex.type == "chat_token") {
+        if(msg.type == "chat_token") {
             if(store.waitingFirstToken){
-                store.messages[nMessages - 1] = mex.content
+                store.messages[nMessages - 1] = msg.content
                 store.waitingFirstToken = false
             } else {
-                store.messages[nMessages - 1] += mex.content
+                store.messages[nMessages - 1] += msg.content
             }
         }
         
-        if(mex.type == "chat") {
-            store.messages[nMessages - 1] = mex.content
-            this.waitingLastToken = false
+        if(msg.type == "chat") {
+            store.messages[nMessages - 1] = msg.content
+            store.waitingLastToken = false
         }
         
-        if(mex.type == "notification") {
+        if(msg.type == "notification") {
             console.warn("Notification")
-            console.warn(mex.content)
+            console.warn(msg.content)
         }
 
         // scroll down chat history
         scrollDown(store.$refs.history)
-    }
+    })
 
-    ccat.onerror = function (mex) {
-        console.error(mex)
+    ccat.onError = function (msg) {
+        console.error(msg)
     }
 
     console.log(ccat)
