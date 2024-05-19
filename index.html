@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheshire Cat AI - Alpine chat widget</title>
+
+    <!-- Add these js and css to your website -->
+    <!-- <script defer type="module" src="https://raw.githubusercontent.com/cheshire-cat-ai/api-client-ts/main/dist/index.js"></script> -->
+    <!-- <script defer type="module" src="https://unpkg.com/ccat-api"></script> -->
+    <script defer src="cheshire-cat-chat-widget.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="cheshire-cat-chat-widget.css">
+    </script>
+</head>
+
+<body>
+
+    <!-- Add this div to your website -->
+    <div id="cheshire-cat-chat-widget" x-data="$store.store">
+
+        <div id="ccat-history" x-ref="history">
+            <template x-for="msg in messages">
+                <div class="ccat-message" x-text="msg"></div>
+            </template>    
+        </div>
+
+        <div id="ccat-toolbar">
+            <textarea id="ccat-query" x-model="query" @keyup.enter="send()"></textarea>
+            <button id="ccat-send-button" @click="send()">Send</button>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
