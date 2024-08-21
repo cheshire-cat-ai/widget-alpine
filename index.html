@@ -8,6 +8,7 @@
 
     <!-- Add these js and css to your website -->
     <script defer type="module" src="cheshire-cat-chat-widget.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="cheshire-cat-chat-widget.css">
 </head>
@@ -24,13 +25,13 @@
             </a>
             
             <template x-for="msg in messages">
-                <div class="ccat-message" x-text="msg"></div>
+                <div class="ccat-message" x-html="marked.parse(msg)"></div>
             </template>
 
         </div>
 
         <div id="ccat-toolbar">
-            <textarea id="ccat-query" x-model="query" @keyup.enter="send()"></textarea>
+            <textarea id="ccat-query" autofocus x-model="query" @keyup.enter="send()"></textarea>
             <button id="ccat-send-button" @click="send()">Send</button>
         </div>
     </div>
